@@ -13,7 +13,17 @@ function AuthForm() {
     
     // Get the return URL from query params, default to home
     const returnUrl = searchParams.get('returnUrl') || '/'
-    const url = new URL(returnUrl, window.location.origin)
+    
+    // Create URL object, handling both relative and absolute URLs
+    let url: URL
+    try {
+      // If returnUrl is absolute, parse it and replace with current origin
+      const parsedReturnUrl = new URL(returnUrl)
+      url = new URL(parsedReturnUrl.pathname + parsedReturnUrl.search, window.location.origin)
+    } catch {
+      // If returnUrl is relative, use it directly with current origin
+      url = new URL(returnUrl, window.location.origin)
+    }
     
     // Add or update the password parameter
     url.searchParams.set('password', password)
