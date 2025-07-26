@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function AuthPage() {
+function AuthForm() {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -59,5 +59,26 @@ export default function AuthPage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full space-y-8 p-8">
+          <div>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              Authentication Required
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Loading...
+            </p>
+          </div>
+        </div>
+      </div>
+    }>
+      <AuthForm />
+    </Suspense>
   )
 }
