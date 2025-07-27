@@ -155,7 +155,7 @@ export const scrapeAndGetLatestApartments = action({
   handler: async (ctx): Promise<Apartment[]> => {
     // Scrape apartments from otodom.pl
     const url =
-      "https://www.otodom.pl/pl/wyniki/wynajem/mieszkanie/wielkopolskie/poznan/poznan/poznan?ownerTypeSingleSelect=ALL&areaMin=45&by=LATEST&direction=DESC";
+      "https://www.otodom.pl/pl/wyniki/wynajem/mieszkanie/wielkopolskie/poznan/poznan/poznan?ownerTypeSingleSelect=ALL&areaMin=45&by=LATEST&direction=DESC&limit=72";
 
     const response = await fetch(url, {
       headers: {
