@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import * as interactionService from "./services/interaction-service";
 
 // Mark apartment as viewed
 export const markAsViewed = mutation({
@@ -7,33 +8,7 @@ export const markAsViewed = mutation({
     apartmentId: v.string()
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
-    
-    // Check if interaction already exists for this apartment
-    const existing = await ctx.db
-      .query("userInteractions")
-      .withIndex("by_apartment", (q) => q.eq("apartmentId", args.apartmentId))
-      .first();
-
-    if (existing) {
-      // Update existing interaction
-      await ctx.db.patch(existing._id, {
-        isViewed: true,
-        viewedAt: now,
-        updatedAt: now,
-      });
-    } else {
-      // Create new interaction
-      await ctx.db.insert("userInteractions", {
-        apartmentId: args.apartmentId,
-        userId: undefined,
-        isViewed: true,
-        isLiked: false,
-        viewedAt: now,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
+    return await interactionService.markAsViewed(ctx.db, args.apartmentId);
   },
 });
 
@@ -44,33 +19,7 @@ export const toggleLike = mutation({
     isLiked: v.boolean()
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
-    
-    // Check if interaction already exists for this apartment
-    const existing = await ctx.db
-      .query("userInteractions")
-      .withIndex("by_apartment", (q) => q.eq("apartmentId", args.apartmentId))
-      .first();
-
-    if (existing) {
-      // Update existing interaction
-      await ctx.db.patch(existing._id, {
-        isLiked: args.isLiked,
-        likedAt: args.isLiked ? now : undefined,
-        updatedAt: now,
-      });
-    } else {
-      // Create new interaction
-      await ctx.db.insert("userInteractions", {
-        apartmentId: args.apartmentId,
-        userId: undefined,
-        isViewed: false,
-        isLiked: args.isLiked,
-        likedAt: args.isLiked ? now : undefined,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
+    return await interactionService.toggleLike(ctx.db, args.apartmentId, args.isLiked);
   },
 });
 
@@ -80,21 +29,6 @@ export const getUserInteractions = query({
     apartmentIds: v.array(v.string())
   },
   handler: async (ctx, args) => {
-    const interactions = await ctx.db
-      .query("userInteractions")
-      .filter((q) => 
-        q.or(...args.apartmentIds.map(id => q.eq(q.field("apartmentId"), id)))
-      )
-      .collect();
-
-    const interactionMap: Record<string, { isViewed: boolean; isLiked: boolean }> = {};
-    interactions.forEach((interaction) => {
-      interactionMap[interaction.apartmentId] = {
-        isViewed: interaction.isViewed,
-        isLiked: interaction.isLiked,
-      };
-    });
-
-    return interactionMap;
+    return await interactionService.getUserInteractions(ctx.db, args.apartmentIds);
   },
 });
