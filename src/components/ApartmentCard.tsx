@@ -34,7 +34,7 @@ export default function ApartmentCard({
           href={apartment.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="block relative h-48 w-full cursor-pointer"
+          className="block relative h-64 w-full cursor-pointer"
         >
           <Image
             src={apartment.image}
