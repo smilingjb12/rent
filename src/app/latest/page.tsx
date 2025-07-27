@@ -7,6 +7,7 @@ import ApartmentCard from "../../components/ApartmentCard";
 import TabNavigation from "../../components/TabNavigation";
 import Header from "../../components/Header";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 interface Apartment {
   id: string;
@@ -23,11 +24,21 @@ export default function LatestPage() {
   const markAsViewed = useMutation(api.interactions.markAsViewed);
   const toggleLike = useMutation(api.interactions.toggleLike);
   const scrapeLatest = useAction(api.apartments.scrapeAndGetLatestApartments);
+  const currentUser = useQuery(api.users.currentUser);
+  const isAuthenticated = !!currentUser;
+  const router = useRouter();
 
   const [latestApartments, setLatestApartments] = useState<Apartment[] | undefined>(undefined);
   const [isLoadingLatest, setIsLoadingLatest] = useState(false);
 
   const loading = isLoadingLatest || latestApartments === undefined;
+
+  // Redirect unauthenticated users to liked page
+  useEffect(() => {
+    if (currentUser !== undefined && !isAuthenticated) {
+      router.push('/liked');
+    }
+  }, [currentUser, isAuthenticated, router]);
 
   useEffect(() => {
     if (latestApartments === undefined && !isLoadingLatest) {
@@ -103,6 +114,7 @@ export default function LatestPage() {
               apartment={apartment}
               isLiked={isApartmentLiked(apartment.id)}
               showRemoveButton={true}
+              isAuthenticated={isAuthenticated}
               onToggleLike={handleToggleLike}
               onMarkAsViewed={handleMarkAsViewed}
             />

@@ -2,33 +2,34 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuthActions } from "@convex-dev/auth/react"
 
 function AuthForm() {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { signIn } = useAuthActions()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
+    setError('')
     
-    // Get the return URL from query params, default to home
-    const returnUrl = searchParams.get('returnUrl') || '/'
-    
-    // Create URL object, handling both relative and absolute URLs
-    let url: URL
     try {
-      // If returnUrl is absolute, parse it and replace with current origin
-      const parsedReturnUrl = new URL(returnUrl)
-      url = new URL(parsedReturnUrl.pathname + parsedReturnUrl.search, window.location.origin)
-    } catch {
-      // If returnUrl is relative, use it directly with current origin
-      url = new URL(returnUrl, window.location.origin)
+      await signIn("password", { email, password, flow: "signIn" })
+      
+      // Get the return URL from query params, default to home
+      const returnUrl = searchParams.get('returnUrl') || '/'
+      router.push(returnUrl)
+    } catch (err) {
+      setError("Invalid email or password")
+      console.error("Sign in error:", err)
+    } finally {
+      setIsLoading(false)
     }
-    
-    // Add or update the password parameter
-    url.searchParams.set('password', password)
-    
-    router.push(url.toString())
   }
 
   return (
@@ -36,13 +37,34 @@ function AuthForm() {
       <div className="max-w-md w-full space-y-8 p-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Authentication Required
+            Sign In
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Please enter the password to access the application
+            Please sign in to access admin features
           </p>
         </div>
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email" className="sr-only">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
           <div>
             <label htmlFor="password" className="sr-only">
               Password
@@ -51,9 +73,10 @@ function AuthForm() {
               id="password"
               name="password"
               type="password"
+              autoComplete="current-password"
               required
               className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Enter password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -61,9 +84,10 @@ function AuthForm() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              Sign in
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
@@ -79,7 +103,7 @@ export default function AuthPage() {
         <div className="max-w-md w-full space-y-8 p-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Authentication Required
+              Sign In
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
               Loading...

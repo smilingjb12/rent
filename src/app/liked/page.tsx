@@ -20,6 +20,8 @@ interface Apartment {
 export default function LikedPage() {
   const likedApartments = useQuery(api.apartments.getLikedApartments);
   const toggleLike = useMutation(api.interactions.toggleLike);
+  const currentUser = useQuery(api.users.currentUser);
+  const isAuthenticated = !!currentUser;
 
   const loading = likedApartments === undefined;
 
@@ -33,7 +35,7 @@ export default function LikedPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
-      <Header onRefresh={() => {}} isRefreshing={false} />
+      <Header onRefresh={() => {}} isRefreshing={false} showRefreshButton={false} />
       
       <TabNavigation
         latestCount={0}
@@ -46,7 +48,14 @@ export default function LikedPage() {
         </div>
       ) : (likedApartments?.length || 0) === 0 ? (
         <div className="text-center text-xl text-muted-foreground">
-          No liked apartments yet. Like some apartments to see them here.
+          <p>No liked apartments yet. Like some apartments to see them here.</p>
+          {!isAuthenticated && (
+            <p className="mt-4">
+              <a href="/auth" className="text-indigo-600 hover:text-indigo-800 underline">
+                Sign in
+              </a> to access all features and manage your preferences.
+            </p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -56,6 +65,7 @@ export default function LikedPage() {
               apartment={apartment}
               isLiked={true}
               showRemoveButton={false}
+              isAuthenticated={isAuthenticated}
               onToggleLike={handleToggleLike}
               onMarkAsViewed={() => {}}
             />

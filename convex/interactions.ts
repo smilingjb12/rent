@@ -9,7 +9,7 @@ export const markAsViewed = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
     
-    // Check if interaction already exists
+    // Check if interaction already exists for this apartment
     const existing = await ctx.db
       .query("userInteractions")
       .withIndex("by_apartment", (q) => q.eq("apartmentId", args.apartmentId))
@@ -26,6 +26,7 @@ export const markAsViewed = mutation({
       // Create new interaction
       await ctx.db.insert("userInteractions", {
         apartmentId: args.apartmentId,
+        userId: undefined,
         isViewed: true,
         isLiked: false,
         viewedAt: now,
@@ -45,7 +46,7 @@ export const toggleLike = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
     
-    // Check if interaction already exists
+    // Check if interaction already exists for this apartment
     const existing = await ctx.db
       .query("userInteractions")
       .withIndex("by_apartment", (q) => q.eq("apartmentId", args.apartmentId))
@@ -62,6 +63,7 @@ export const toggleLike = mutation({
       // Create new interaction
       await ctx.db.insert("userInteractions", {
         apartmentId: args.apartmentId,
+        userId: undefined,
         isViewed: false,
         isLiked: args.isLiked,
         likedAt: args.isLiked ? now : undefined,

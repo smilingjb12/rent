@@ -1,7 +1,10 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
+  ...authTables,
+  
   apartments: defineTable({
     id: v.string(), // External apartment ID (URL)
     title: v.string(),
@@ -16,6 +19,7 @@ export default defineSchema({
 
   userInteractions: defineTable({
     apartmentId: v.string(),
+    userId: v.optional(v.id("users")), // Link to authenticated user
     isViewed: v.boolean(),
     isLiked: v.boolean(),
     viewedAt: v.optional(v.number()),
@@ -24,5 +28,6 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_apartment", ["apartmentId"])
     .index("by_viewed", ["isViewed"])
-    .index("by_liked", ["isLiked"]),
+    .index("by_liked", ["isLiked"])
+    .index("by_user", ["userId"]),
 });
