@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import * as interactionService from "./services/interaction-service";
+import * as interactionService from "./services/interactionService";
 
 // Mark apartment as viewed
 export const markAsViewed = mutation({

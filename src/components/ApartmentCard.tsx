@@ -49,9 +49,16 @@ export default function ApartmentCard({
       )}
 
       <div className="p-4">
-        <h2 className="text-lg font-semibold mb-2 line-clamp-2 text-card-foreground">
-          {apartment.title}
-        </h2>
+        <a
+          href={apartment.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <h2 className="text-lg font-semibold mb-2 line-clamp-2 text-card-foreground hover:text-primary transition-colors cursor-pointer">
+            {apartment.title}
+          </h2>
+        </a>
 
         <div className="space-y-1 text-sm text-muted-foreground mb-4">
           <div className="text-xl font-bold text-success">
