@@ -122,7 +122,7 @@ export async function getLikedApartments(
 
 export async function scrapeOtodomApartments(): Promise<Apartment[]> {
   const url =
-    "https://www.otodom.pl/pl/wyniki/wynajem/mieszkanie/wielkopolskie/poznan/poznan/poznan?ownerTypeSingleSelect=ALL&areaMin=45&by=LATEST&direction=DESC&limit=72";
+    "https://www.otodom.pl/pl/wyniki/wynajem/mieszkanie/wielkopolskie/poznan/poznan/poznan?ownerTypeSingleSelect=ALL&areaMin=45&direction=DESC&limit=72";
 
   const response = await fetch(url, {
     headers: {
