@@ -73,10 +73,10 @@ export default function ApartmentCard({
           {(isAuthenticated || isLiked) && (
             <button
               onClick={() => onToggleLike(apartment)}
-              className={`p-2 rounded-md transition-colors ${
+              className={`p-2 rounded-md transition-colors cursor-pointer ${
                 isLiked
-                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  ? "bg-destructive text-destructive-foreground hover:bg-red-600"
+                  : "bg-muted text-muted-foreground hover:bg-red-500 hover:text-white"
               }`}
               title={isLiked ? (isAuthenticated ? "Unlike" : "Login to unlike") : "Like"}
               disabled={isLiked && !isAuthenticated}
@@ -101,7 +101,7 @@ export default function ApartmentCard({
           {showRemoveButton && (
             <button
               onClick={() => onMarkAsViewed(apartment.id)}
-              className="p-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
+              className="p-2 cursor-pointer bg-secondary text-secondary-foreground rounded-md hover:bg-red-500 hover:text-white transition-colors"
               title="Remove from list"
             >
               <svg
