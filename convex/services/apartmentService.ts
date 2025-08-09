@@ -121,103 +121,113 @@ export async function getLikedApartments(
 }
 
 export async function scrapeOtodomApartments(): Promise<Apartment[]> {
-  const url =
-    "https://www.otodom.pl/pl/wyniki/wynajem/mieszkanie/wielkopolskie/poznan/poznan/poznan?ownerTypeSingleSelect=ALL&areaMin=45&direction=DESC&limit=72";
+  const baseUrl = "https://www.otodom.pl/pl/wyniki/wynajem/mieszkanie/wielkopolskie/poznan/poznan/poznan?ownerTypeSingleSelect=ALL&areaMin=45&direction=DESC&limit=72";
+  const urls = [
+    baseUrl,
+    `${baseUrl}&page=2`
+  ];
 
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    },
-  });
+  const allApartments: Apartment[] = [];
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+  for (const url of urls) {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+      },
+    });
 
-  const html = await response.text();
-
-  // Parse HTML using simple string manipulation (since cheerio isn't available in Convex)
-  const scrapedApartments: Apartment[] = [];
-
-  // Extract articles using regex patterns
-  const articleRegex = /<article[^>]*>(.*?)<\/article>/g;
-  const articles = html.match(articleRegex) || [];
-
-  for (const article of articles) {
-    // Extract listing link
-    const linkMatch = article.match(
-      /data-cy="listing-item-link"[^>]*href="([^"]*)"[^>]*>/
-    );
-    if (!linkMatch) continue;
-
-    const link = linkMatch[1];
-    const fullLink = link.startsWith("http")
-      ? link
-      : `https://www.otodom.pl${link}`;
-
-    // Extract title
-    const titleMatch = article.match(
-      /data-cy="listing-item-title"[^>]*>([^<]*)</
-    );
-    const title = titleMatch ? titleMatch[1].trim() : "";
-
-    // Extract main price
-    const priceMatch = article.match(
-      /class="css-1grq1gi e1uoo6be1"[^>]*>([^<]*)</
-    );
-    const mainPrice = priceMatch ? priceMatch[1].trim() : "";
-
-    // Extract additional cost
-    const additionalCostMatch = article.match(
-      /class="css-13du2ho e1uoo6be2"[^>]*>([^<]*)</
-    );
-    const additionalCost = additionalCostMatch
-      ? additionalCostMatch[1].trim()
-      : "";
-
-    // Combine price information
-    let price = mainPrice;
-    if (additionalCost) {
-      price = `${mainPrice} (${additionalCost})`;
+    if (!response.ok) {
+      console.warn(`Failed to fetch ${url}: ${response.status}`);
+      continue;
     }
 
-    // Extract image
-    const imageMatch = article.match(/<img[^>]*src="([^"]*)"[^>]*>/);
-    const image = imageMatch ? imageMatch[1] : "";
+    const html = await response.text();
 
-    // Extract area from additional cost
-    let area = "";
-    const areaMatch = additionalCost.match(/(\d+)\s*zł\/m²/);
-    if (areaMatch) {
-      area = `${areaMatch[1]} m²`;
-    }
+    // Parse HTML using simple string manipulation (since cheerio isn't available in Convex)
+    const scrapedApartments: Apartment[] = [];
 
-    // Extract floor info from title
-    let floor = "";
-    if (title.toLowerCase().includes("parter")) {
-      floor = "parter";
-    } else if (title.toLowerCase().includes("piętro")) {
-      const floorMatch = title.match(/(\d+)\s*piętro/i);
-      if (floorMatch) {
-        floor = `${floorMatch[1]} piętro`;
-      } else {
-        floor = "piętro";
+    // Extract articles using regex patterns
+    const articleRegex = /<article[^>]*>(.*?)<\/article>/g;
+    const articles = html.match(articleRegex) || [];
+
+    for (const article of articles) {
+      // Extract listing link
+      const linkMatch = article.match(
+        /data-cy="listing-item-link"[^>]*href="([^"]*)"[^>]*>/
+      );
+      if (!linkMatch) continue;
+
+      const link = linkMatch[1];
+      const fullLink = link.startsWith("http")
+        ? link
+        : `https://www.otodom.pl${link}`;
+
+      // Extract title
+      const titleMatch = article.match(
+        /data-cy="listing-item-title"[^>]*>([^<]*)</
+      );
+      const title = titleMatch ? titleMatch[1].trim() : "";
+
+      // Extract main price
+      const priceMatch = article.match(
+        /class="css-1grq1gi e1uoo6be1"[^>]*>([^<]*)</
+      );
+      const mainPrice = priceMatch ? priceMatch[1].trim() : "";
+
+      // Extract additional cost
+      const additionalCostMatch = article.match(
+        /class="css-13du2ho e1uoo6be2"[^>]*>([^<]*)</
+      );
+      const additionalCost = additionalCostMatch
+        ? additionalCostMatch[1].trim()
+        : "";
+
+      // Combine price information
+      let price = mainPrice;
+      if (additionalCost) {
+        price = `${mainPrice} (${additionalCost})`;
+      }
+
+      // Extract image
+      const imageMatch = article.match(/<img[^>]*src="([^"]*)"[^>]*>/);
+      const image = imageMatch ? imageMatch[1] : "";
+
+      // Extract area from additional cost
+      let area = "";
+      const areaMatch = additionalCost.match(/(\d+)\s*zł\/m²/);
+      if (areaMatch) {
+        area = `${areaMatch[1]} m²`;
+      }
+
+      // Extract floor info from title
+      let floor = "";
+      if (title.toLowerCase().includes("parter")) {
+        floor = "parter";
+      } else if (title.toLowerCase().includes("piętro")) {
+        const floorMatch = title.match(/(\d+)\s*piętro/i);
+        if (floorMatch) {
+          floor = `${floorMatch[1]} piętro`;
+        } else {
+          floor = "piętro";
+        }
+      }
+
+      if (title && price) {
+        scrapedApartments.push({
+          id: fullLink,
+          title,
+          price,
+          floor,
+          area,
+          image,
+          link: fullLink,
+        });
       }
     }
 
-    if (title && price) {
-      scrapedApartments.push({
-        id: fullLink,
-        title,
-        price,
-        floor,
-        area,
-        image,
-        link: fullLink,
-      });
-    }
+    allApartments.push(...scrapedApartments);
   }
 
-  return scrapedApartments;
+  return allApartments;
 }
