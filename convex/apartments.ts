@@ -11,6 +11,7 @@ export interface Apartment {
   area: string;
   image: string;
   link: string;
+  createdAt?: number;
 }
 
 // Cache apartments from scraping

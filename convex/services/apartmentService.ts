@@ -77,6 +77,7 @@ export async function getLatestApartments(
         area: apartment.area || "",
         image: apartment.imageUrl || "",
         link: apartment.externalLink,
+        createdAt: apartment.createdAt,
       });
     }
   }
@@ -93,11 +94,8 @@ export async function getLikedApartments(
     .withIndex("by_liked", (q) => q.eq("isLiked", true))
     .collect();
 
-  // Sort by liked date (most recent first)
-  likedInteractions.sort((a, b) => (b.likedAt || 0) - (a.likedAt || 0));
-
-  // Get apartment details for liked apartments
-  const apartments: Apartment[] = [];
+  // Get apartment details for liked apartments with creation dates
+  const apartmentsWithDates: (Apartment & { createdAt: number })[] = [];
   for (const interaction of likedInteractions) {
     const apartment = await db
       .query("apartments")
@@ -105,7 +103,7 @@ export async function getLikedApartments(
       .first();
 
     if (apartment) {
-      apartments.push({
+      apartmentsWithDates.push({
         id: apartment.id,
         title: apartment.title,
         price: apartment.price,
@@ -113,11 +111,16 @@ export async function getLikedApartments(
         area: apartment.area || "",
         image: apartment.imageUrl || "",
         link: apartment.externalLink,
+        createdAt: apartment.createdAt,
       });
     }
   }
 
-  return apartments;
+  // Sort by creation date (most recent first)
+  apartmentsWithDates.sort((a, b) => b.createdAt - a.createdAt);
+
+  // Return with createdAt field
+  return apartmentsWithDates;
 }
 
 export async function scrapeOtodomApartments(): Promise<Apartment[]> {
