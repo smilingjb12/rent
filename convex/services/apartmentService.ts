@@ -136,7 +136,7 @@ export async function scrapeOtodomApartments(): Promise<Apartment[]> {
     const response = await fetch(url, {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       },
     });
 
@@ -151,7 +151,7 @@ export async function scrapeOtodomApartments(): Promise<Apartment[]> {
     const scrapedApartments: Apartment[] = [];
 
     // Extract articles using regex patterns
-    const articleRegex = /<article[^>]*>(.*?)<\/article>/g;
+    const articleRegex = /<article[^>]*>([\s\S]*?)<\/article>/g;
     const articles = html.match(articleRegex) || [];
 
     for (const article of articles) {
@@ -172,19 +172,27 @@ export async function scrapeOtodomApartments(): Promise<Apartment[]> {
       );
       const title = titleMatch ? titleMatch[1].trim() : "";
 
-      // Extract main price
+      // Extract main price using updated pattern that works with current HTML structure
       const priceMatch = article.match(
-        /class="css-1grq1gi e1uoo6be1"[^>]*>([^<]*)</
+        />(\d+\s*\d*\s*zł)<\/span>/
       );
       const mainPrice = priceMatch ? priceMatch[1].trim() : "";
 
-      // Extract additional cost
-      const additionalCostMatch = article.match(
-        /class="css-13du2ho e1uoo6be2"[^>]*>([^<]*)</
-      );
-      const additionalCost = additionalCostMatch
-        ? additionalCostMatch[1].trim()
-        : "";
+      // Try to extract additional cost using multiple patterns
+      const additionalCostPatterns = [
+        /class="css-13du2ho e1uoo6be2"[^>]*>([^<]*)</,
+        />\+\s*(\d+[^<]*)<\/span>/,
+        /data-cy="listing-price-additional"[^>]*>([^<]*)</
+      ];
+
+      let additionalCost = "";
+      for (const pattern of additionalCostPatterns) {
+        const match = article.match(pattern);
+        if (match) {
+          additionalCost = match[1].trim();
+          break;
+        }
+      }
 
       // Combine price information
       let price = mainPrice;
