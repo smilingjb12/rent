@@ -41,57 +41,66 @@ export default function ApartmentCard({
     }
   };
   return (
-    <div className="bg-card text-card-foreground rounded-lg shadow-md border border-border overflow-hidden">
+    <div className="group bg-card text-card-foreground rounded-xl shadow-sm border border-border overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5">
       {apartment.image && (
         <a
           href={apartment.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="block relative h-64 w-full cursor-pointer"
+          className="block relative aspect-[16/10] w-full cursor-pointer overflow-hidden"
         >
           <Image
             src={apartment.image}
             alt={apartment.title}
             fill
-            className="object-cover hover:opacity-90 transition-opacity"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";
             }}
           />
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
         </a>
       )}
 
-      <div className="p-4">
+      <div className="p-4 md:p-5">
         <a
           href={apartment.link}
           target="_blank"
           rel="noopener noreferrer"
           className="block"
         >
-          <h2 className="text-lg font-semibold mb-2 line-clamp-2 text-card-foreground hover:text-primary transition-colors cursor-pointer">
+          <h2 className="text-base md:text-lg font-semibold mb-2 line-clamp-2 text-card-foreground hover:text-primary transition-colors cursor-pointer">
             {apartment.title}
           </h2>
         </a>
 
-        <div className="space-y-1 text-sm text-muted-foreground mb-4">
-          <div className="text-xl font-bold text-success">
-            {apartment.price}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="text-xl font-bold text-success">{apartment.price}</div>
+          <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+            {apartment.area && (
+              <span className="inline-flex items-center rounded-full bg-accent px-2.5 py-1 font-medium text-accent-foreground">
+                {apartment.area}
+              </span>
+            )}
+            {apartment.floor && (
+              <span className="inline-flex items-center rounded-full bg-accent px-2.5 py-1 font-medium text-accent-foreground">
+                {apartment.floor}
+              </span>
+            )}
           </div>
-          {apartment.area && <div>Area: {apartment.area}</div>}
-          {apartment.floor && <div>Floor: {apartment.floor}</div>}
         </div>
 
         <div className="flex gap-2 items-center justify-between">
           {/* Creation date with clock icon */}
           {apartment.createdAt && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-6 h-6"
+                className="w-5 h-5"
               >
                 <path
                   strokeLinecap="round"
@@ -112,10 +121,10 @@ export default function ApartmentCard({
             {(isAuthenticated || isLiked) && (
               <button
                 onClick={() => onToggleLike(apartment)}
-                className={`p-2 rounded-md transition-colors cursor-pointer ${
+                className={`p-2 rounded-lg border ${
                   isLiked
-                    ? "bg-destructive text-destructive-foreground hover:bg-red-600"
-                    : "bg-muted text-muted-foreground hover:bg-red-500 hover:text-white"
+                    ? "bg-destructive text-destructive-foreground border-transparent hover:bg-red-600"
+                    : "bg-muted text-muted-foreground border-border hover:bg-red-500 hover:text-white"
                 }`}
                 title={
                   isLiked
@@ -147,7 +156,7 @@ export default function ApartmentCard({
               <button
                 onClick={handleRemove}
                 disabled={isRemoving}
-                className="p-2 cursor-pointer bg-secondary text-secondary-foreground rounded-md hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 cursor-pointer rounded-lg border border-border bg-secondary/90 text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Remove from list"
               >
                 {isRemoving ? (

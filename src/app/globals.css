@@ -1,25 +1,26 @@
 @import "tailwindcss";
 
+/* Modern, friendly theme tokens */
 :root {
-  --background: #fafafa;
-  --foreground: #0a0a0a;
+  --background: #f7f8fb;
+  --foreground: #0b1220;
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
+  --card-foreground: #0b1220;
   --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --secondary: #64748b;
-  --secondary-foreground: #ffffff;
-  --accent: #f1f5f9;
-  --accent-foreground: #0a0a0a;
-  --destructive: #dc2626;
+  --secondary: #0ea5e9;
+  --secondary-foreground: #071827;
+  --accent: #eef2ff;
+  --accent-foreground: #0b1220;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
   --ring: #2563eb;
-  --success: #059669;
-  --success-foreground: #ffffff;
+  --success: #10b981;
+  --success-foreground: #062e1d;
 }
 
 @theme inline {
@@ -48,30 +49,43 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #fafafa;
-    --card: #0a0a0a;
-    --card-foreground: #fafafa;
-    --primary: #3b82f6;
-    --primary-foreground: #0a0a0a;
-    --secondary: #1e293b;
-    --secondary-foreground: #fafafa;
-    --accent: #1e293b;
-    --accent-foreground: #fafafa;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #fafafa;
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
-    --border: #1e293b;
-    --input: #1e293b;
-    --ring: #3b82f6;
-    --success: #047857;
-    --success-foreground: #fafafa;
+    --background: #0b1220;
+    --foreground: #e6e8ee;
+    --card: #0f172a;
+    --card-foreground: #e6e8ee;
+    --primary: #60a5fa;
+    --primary-foreground: #0b1220;
+    --secondary: #38bdf8;
+    --secondary-foreground: #031019;
+    --accent: #111827;
+    --accent-foreground: #e6e8ee;
+    --destructive: #f87171;
+    --destructive-foreground: #1b0b0b;
+    --muted: #0f172a;
+    --muted-foreground: #93a4bf;
+    --border: #1f2937;
+    --input: #1f2937;
+    --ring: #60a5fa;
+    --success: #34d399;
+    --success-foreground: #052514;
   }
 }
 
+/* Base polish */
+html { scroll-behavior: smooth; }
 body {
-  background: var(--background);
   color: var(--foreground);
+  background:
+    radial-gradient(1200px 800px at -10% -20%, rgba(99, 102, 241, 0.08), transparent 60%),
+    radial-gradient(1000px 600px at 110% 10%, rgba(56, 189, 248, 0.08), transparent 60%),
+    var(--background);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+::selection { background: color-mix(in oklab, var(--primary) 30%, transparent); }
+
+@layer base {
+  h1 { @apply tracking-tight; }
+  h2 { @apply tracking-tight; }
+  a { @apply transition-colors; }
+  button { @apply transition-all; }
 }

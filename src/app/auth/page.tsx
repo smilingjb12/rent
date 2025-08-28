@@ -33,18 +33,18 @@ function AuthForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 p-8 rounded-2xl border border-border bg-card/90 backdrop-blur shadow-sm">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-2 text-center text-3xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Sign In
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-muted-foreground">
             Please sign in to access admin features
           </p>
         </div>
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-md">
             {error}
           </div>
         )}
@@ -59,7 +59,7 @@ function AuthForm() {
               type="email"
               autoComplete="email"
               required
-              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-input bg-card placeholder:text-muted-foreground/70 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring focus:z-10 text-sm"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -75,7 +75,7 @@ function AuthForm() {
               type="password"
               autoComplete="current-password"
               required
-              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-input bg-card placeholder:text-muted-foreground/70 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring focus:z-10 text-sm"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -85,7 +85,7 @@ function AuthForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-border text-sm font-medium rounded-lg text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
@@ -99,13 +99,13 @@ function AuthForm() {
 export default function AuthPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full space-y-8 p-8">
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="max-w-md w-full space-y-8 p-8 rounded-2xl border border-border bg-card/90 backdrop-blur shadow-sm">
           <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-2 text-center text-3xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Sign In
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
+            <p className="mt-2 text-center text-sm text-muted-foreground">
               Loading...
             </p>
           </div>

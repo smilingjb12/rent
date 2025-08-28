@@ -30,13 +30,13 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-center mb-6">Sign Up</h1>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-md w-full rounded-2xl border border-border bg-card/90 backdrop-blur shadow-sm p-6">
+        <h1 className="text-2xl font-semibold text-center mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Sign Up</h1>
         
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground">
               Email
             </label>
             <input
@@ -45,12 +45,12 @@ export default function SignUpPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-input bg-card rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
             />
           </div>
           
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground">
               Password
             </label>
             <input
@@ -60,24 +60,24 @@ export default function SignUpPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-input bg-card rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
             />
           </div>
           
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full flex justify-center py-2 px-4 rounded-lg border border-border text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
         
         {message && (
-          <div className={`mt-4 p-3 rounded-md ${
+          <div className={`mt-4 p-3 rounded-md border ${
             message.includes("successfully") 
-              ? "bg-green-100 text-green-700" 
-              : "bg-red-100 text-red-700"
+              ? "bg-success/10 text-success-foreground border-success/30" 
+              : "bg-destructive/10 text-destructive border-destructive/30"
           }`}>
             {message}
           </div>
